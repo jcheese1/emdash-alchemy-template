@@ -1,0 +1,48 @@
+{
+  "type": "module",
+  "name": "emdash-alchemy-template",
+  "private": true,
+  "scripts": {
+    "build": "astro build",
+    "deploy:staging": "alchemy deploy --stage staging",
+    "deploy:production": "alchemy deploy --stage production",
+    "destroy": "alchemy destroy",
+    "dev": "alchemy dev",
+    "preview": "bun run build && astro preview",
+    "typecheck": "astro check && wrangler types && tsc -b"
+  },
+  "dependencies": {
+    "astro": "^6.1.3",
+    "emdash": "^0.4.0",
+    "@astrojs/react": "^5.0.2",
+    "@astrojs/cloudflare": "^13.1.7",
+    "@types/bun": "^1.3.0",
+    "react": "^19.2.3",
+    "react-dom": "^19.2.3",
+    "@emdash-cms/cloudflare": "^0.4.0"
+  },
+  "devDependencies": {
+    "@astrojs/compiler-rs": "^0.1.6",
+    "@cloudflare/vite-plugin": "^1.31.0",
+    "@tailwindcss/vite": "^4.2.2",
+    "@types/node": "^20",
+    "@types/react": "^19.2.3",
+    "@types/react-dom": "^19.2.3",
+    "alchemy": "^0.90.1",
+    "miniflare": "^4.20250617.3",
+    "tailwindcss": "^4.1.18",
+    "typescript": "^5.8.3",
+    "@astrojs/check": "^0.9.8",
+    "@astrojs/sitemap": "^3.7.2",
+    "update-browserslist-db": "^1.2.3",
+    "browserslist": "^4.28.2",
+    "lightningcss": "^1.32.0",
+    "wrangler": "latest"
+  },
+  "devEngines": {
+    "runtime": {
+      "name": "node",
+      "version": "25.8.1"
+    }
+  }
+}
