@@ -8,7 +8,9 @@ import { d1, r2 } from "@emdash-cms/cloudflare";
 
 export default defineConfig({
 	output: "server",
-	adapter: cloudflare(),
+	adapter: cloudflare({
+		sessionKVBindingName: "SESSION"
+	}),
 	image: {
 		layout: "constrained",
 		responsiveStyles: true,
