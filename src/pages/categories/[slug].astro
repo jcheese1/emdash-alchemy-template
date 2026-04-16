@@ -1,25 +1,33 @@
 ---
 /**
- * Homepage / Blog Index
+ * Category Archive
  *
  * Demonstrates:
- * - getEmDashCollection for listing entries
- * - Passing image fields correctly to components
+ * - getTerm for fetching taxonomy term details
+ * - getEntriesByTerm for entries with a specific term
  */
 
-import { getEmDashCollection } from "emdash";
-import Base from "../layouts/Base.astro";
-import PostCard from "../components/PostCard.astro";
+import { getTerm, getEntriesByTerm } from "emdash";
+import Base from "../../layouts/Base.astro";
+import PostCard from "../../components/PostCard.astro";
 
-const { entries: posts } = await getEmDashCollection("posts", {
-	status: "published",
-	limit: 10,
-});
+const { slug } = Astro.params;
+
+const category = await getTerm("categories", slug!);
+const posts = await getEntriesByTerm("posts", "categories", slug!);
+
+if (!category) {
+	return Astro.redirect("/404");
+}
 ---
 
-<Base>
+<Base title={category.label}>
 	<div class="container">
 		<div class="content-width">
+			<header class="archive-header">
+				<h1>{category.label}</h1>
+			</header>
+
 			{
 				posts.length > 0 ? (
 					<div class="posts-list">
@@ -29,11 +37,6 @@ const { entries: posts } = await getEmDashCollection("posts", {
 								href={`/posts/${post.data.slug || post.id}`}
 								date={post.data.published_at}
 								excerpt={post.data.excerpt}
-								{
-								/* 
-									IMPORTANT: featured_image is { src, alt }, not a string!
-									Pass the whole object, or extract src/alt explicitly.
-								*/ }
 								featuredImage={
 									post.data.featured_image?.src
 										? {
@@ -46,7 +49,7 @@ const { entries: posts } = await getEmDashCollection("posts", {
 						))}
 					</div>
 				) : (
-					<p class="text-muted">No posts yet.</p>
+					<p class="text-muted">No posts in this category.</p>
 				)
 			}
 		</div>

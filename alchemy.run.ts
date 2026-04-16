@@ -35,6 +35,8 @@ export const worker = await Astro("website", {
   adopt: true,
   compatibilityFlags: ['nodejs_compat'],
   compatibilityDate: "2026-04-04",
+  entrypoint: "dist/server/entry.mjs",
+  assets: "dist/client",
   bindings: {
     PUBLIC_VALUE_FROM_CLOUDFLARE: process.env.PUBLIC_VALUE_FROM_CLOUDFLARE || "value1",
     // SECRET: alchemy.secret(process.env.SECRET),
@@ -91,5 +93,4 @@ console.log({
 });
 
 await app.finalize();
-
 

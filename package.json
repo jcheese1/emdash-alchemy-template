@@ -5,7 +5,7 @@
   "scripts": {
     "build": "astro build",
     "deploy:staging": "alchemy deploy --stage staging",
-    "deploy:production": "alchemy deploy --stage production",
+    "deploy:prod": "alchemy deploy --stage prod",
     "destroy": "alchemy destroy",
     "dev": "alchemy dev",
     "preview": "bun run build && astro preview",
