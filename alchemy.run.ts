@@ -1,7 +1,7 @@
 /// <reference types="@types/bun" />
 
 import alchemy, { Scope } from "alchemy";
-import { Astro,R2Bucket, D1Database } from "alchemy/cloudflare";
+import { Astro,R2Bucket, D1Database, KVNamespace } from "alchemy/cloudflare";
 import { CloudflareStateStore, FileSystemStateStore } from "alchemy/state";
 import { GitHubComment } from "alchemy/github";
 
@@ -9,19 +9,21 @@ const stage = process.env.STAGE ?? "dev";
 
 const fileStateStore = (scope: Scope) => new FileSystemStateStore(scope);
 
+const NAME = 'emdash-alchemy-cloudflare-app';
+
 const cloudflareStateStore = (scope: Scope) => new CloudflareStateStore(scope, {
   stateToken: alchemy.secret(process.env.ALCHEMY_STATE_TOKEN),
-  scriptName: `react-router-alchemy-cloudflare-app-state-service-${stage === "prod" ? "prod" : "dev"}`
+  scriptName: `${NAME}-state-service-${stage === "prod" ? "prod" : "dev"}`
 });
 
-const app = await alchemy("react-router-alchemy-cloudflare-app", {
+const app = await alchemy(NAME, {
   stage,
   password: process.env.ALCHEMY_PASSWORD ?? "password",
   stateStore: stage === "dev" ? fileStateStore : cloudflareStateStore,
 });
 
 const media = await R2Bucket("media", {
-  delete: false,
+  adopt: true,
   // dev: {
   //   remote: true
   // }
@@ -31,6 +33,10 @@ const db = await D1Database("db", {
   adopt: true,
 })
 
+const sessionKv = await KVNamespace("session", {
+  adopt: true,
+});
+
 export const worker = await Astro("website", {
   adopt: true,
   compatibilityFlags: ['nodejs_compat'],
@@ -38,10 +44,9 @@ export const worker = await Astro("website", {
   entrypoint: "dist/server/entry.mjs",
   assets: "dist/client",
   bindings: {
-    PUBLIC_VALUE_FROM_CLOUDFLARE: process.env.PUBLIC_VALUE_FROM_CLOUDFLARE || "value1",
-    // SECRET: alchemy.secret(process.env.SECRET),
     MEDIA: media,
     DB: db,
+    SESSION: sessionKv,
   },
   // Workaround: alchemy sets main to the build output path, but
   // @astrojs/cloudflare v13 needs a resolvable module (not a file path)
